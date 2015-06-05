@@ -119,22 +119,9 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         Log.e("myid", "onNavigationDrawerItemSelected");
     }
 
-    public void onSectionAttached(int number) {
+    public void onSectionAttached(int number, String title) {
         Log.e("myid", "onSectionAttached");
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.main_activity_drawer_profile);
-                break;
-            case 2:
-                mTitle = getString(R.string.main_activity_drawer_fridge);
-                break;
-            case 3:
-                mTitle = getString(R.string.main_activity_drawer_mealplan);
-                break;
-            case 4:
-                mTitle = getString(R.string.main_activity_drawer_settings);
-                break;
-        }
+        mTitle = title;
     }
 
     public void restoreActionBar() {

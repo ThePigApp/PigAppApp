@@ -10,15 +10,15 @@ import android.view.ViewGroup;
 /**
  * Created by jgzuke on 15-06-05.
  */
-public class MenuProfileFragment extends MenuBaseFragment {
+public class MenuMealplanFragment extends MenuBaseFragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
 
     /**
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static MenuProfileFragment newInstance(int sectionNumber) {
-        MenuProfileFragment fragment = new MenuProfileFragment();
+    public static MenuMealplanFragment newInstance(int sectionNumber) {
+        MenuMealplanFragment fragment = new MenuMealplanFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
@@ -27,15 +27,15 @@ public class MenuProfileFragment extends MenuBaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_menu_profile, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_menu_mealplan, container, false);
         return rootView;
     }
 
-    public MenuProfileFragment() {
+    public MenuMealplanFragment() {
     }
 
     @Override
     public String getTitle() {
-        return getString(R.string.main_activity_drawer_profile);
+        return getString(R.string.main_activity_drawer_mealplan);
     }
 }
