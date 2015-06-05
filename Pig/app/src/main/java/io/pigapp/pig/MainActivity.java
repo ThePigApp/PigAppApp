@@ -3,6 +3,8 @@ package io.pigapp.pig;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
@@ -30,6 +32,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -68,8 +73,11 @@ public class MainActivity extends ActionBarActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
+        mFileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
+
         // create Intent to take a picture and return control to the calling application
         mCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        mCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
 
         mLinLayout = (FrameLayout) findViewById(R.id.container);
         mTakePicture = (Button) findViewById(R.id.take_picture);
@@ -81,16 +89,7 @@ public class MainActivity extends ActionBarActivity
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
-
-        }
-    }
-
-
-        /** Create a file Uri for saving an image or video */
+    /** Create a file Uri for saving an image or video */
     private static Uri getOutputMediaFileUri(int type){
         return Uri.fromFile(getOutputMediaFile(type));
     }
@@ -101,7 +100,7 @@ public class MainActivity extends ActionBarActivity
         // using Environment.getExternalStorageState() before doing this.
 
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "MyCameraApp");
+                Environment.DIRECTORY_PICTURES), "Pig");
         // This location works best if you want the created images to be shared
         // between applications and persist after your app has been uninstalled.
 
@@ -124,6 +123,25 @@ public class MainActivity extends ActionBarActivity
         }
 
         return mediaFile;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // Image captured and saved to fileUri specified in the Intent
+                Toast.makeText(this, "Image saved to:\n" +
+                        mFileUri, Toast.LENGTH_LONG).show();
+                Drawable dr = null;
+                try {
+                    InputStream inputStream = getContentResolver().openInputStream(mFileUri);
+                    dr = Drawable.createFromStream(inputStream, mFileUri.toString() );
+                } catch (FileNotFoundException e) {
+                    Log.e("MainActivity", "Could not open file");
+                }
+                mLinLayout.setBackgroundDrawable(dr);
+            }
+        }
     }
 
     @Override
