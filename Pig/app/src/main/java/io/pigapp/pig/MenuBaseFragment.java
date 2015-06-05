@@ -11,12 +11,34 @@ import android.view.ViewGroup;
  * Created by jgzuke on 15-06-05.
  */
 public abstract class MenuBaseFragment extends Fragment {
-    private static final String ARG_SECTION_NUMBER = "section_number";
+
+    /**
+     * Returns a new instance of this fragment for the given section
+     * number.
+     */
+    public static MenuBaseFragment newInstance(int sectionNumber) {
+        MenuBaseFragment fragment;
+        switch(sectionNumber) {
+            case 0:
+                fragment = new MenuProfileFragment();
+                break;
+            case 1:
+                fragment = new MenuFridgeFragment();
+                break;
+            case 2:
+                fragment = new MenuMealplanFragment();
+                break;
+            default:
+                fragment = new MenuSettingsFragment();
+                break;
+        }
+        return fragment;
+    }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        ((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER), getTitle());
+        ((MainActivity) activity).onSectionAttached(getTitle());
     }
 
     public abstract String getTitle();

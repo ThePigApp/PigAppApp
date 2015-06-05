@@ -115,11 +115,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.container, MenuProfileFragment.newInstance(position + 1)).commit();
-        Log.e("myid", "onNavigationDrawerItemSelected");
+        fragmentManager.beginTransaction().replace(R.id.container, MenuBaseFragment.newInstance(position)).commit();
     }
 
-    public void onSectionAttached(int number, String title) {
+    public void onSectionAttached(String title) {
         Log.e("myid", "onSectionAttached");
         mTitle = title;
     }
