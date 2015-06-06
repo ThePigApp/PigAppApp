@@ -2,45 +2,33 @@ package io.pigapp.pig;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+
+    private static int CAMERA_ACTIVITY = 0;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -52,9 +40,9 @@ public class MainActivity extends ActionBarActivity
      */
     private CharSequence mTitle;
     private Button mTakePicture;
-    private Intent mCameraIntent;
     private FrameLayout mLinLayout;
-    private Uri mFileUri;
+
+    private Intent mCameraIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,11 +60,32 @@ public class MainActivity extends ActionBarActivity
 
         mLinLayout = (FrameLayout) findViewById(R.id.container);
         mTakePicture = (Button) findViewById(R.id.take_picture);
+
+        mCameraIntent = new Intent(this, CameraActivity.class);
+
         mTakePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startActivityForResult(mCameraIntent, CAMERA_ACTIVITY);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAMERA_ACTIVITY) {
+            if (resultCode == RESULT_OK) {
+                Uri url = Uri.parse(data.getStringExtra("fileDir"));
+                Drawable dr = null;
+                try {
+                    InputStream inputStream = getContentResolver().openInputStream(url);
+                    dr = Drawable.createFromStream(inputStream, url.toString());
+                } catch (FileNotFoundException e) {
+                    Log.e("CameraActivity", "Could not open/find file");
+                }
+                mLinLayout.setBackgroundDrawable(dr);
+            }
+        }
     }
 
     @Override

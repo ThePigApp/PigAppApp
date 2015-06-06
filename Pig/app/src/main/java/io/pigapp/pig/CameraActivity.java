@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,44 +22,33 @@ import java.util.Date;
 /**
  * Created by wojtekswiderski on 15-06-05.
  */
-public class CameraManager extends Activity {
+public class CameraActivity extends Activity {
 
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
     public static final int MEDIA_TYPE_IMAGE = 1;
 
-    private Context mContext;
-    private Uri mFileUri;
+    private Uri mFile;
     private Intent mCameraIntent;
 
-    public CameraManager(Context context) {
-        mContext = context;
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mFile = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
 
-
-        mFileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
-
-        // create Intent to take a picture and return control to the calling application
         mCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        mCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
+        mCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFile);
+
+        startActivityForResult(mCameraIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // Image captured and saved to fileUri specified in the Intent
-                Toast.makeText(this, "Image saved to:\n" +
-                        mFileUri, Toast.LENGTH_LONG).show();
-                Drawable dr = null;
-                try {
-                    InputStream inputStream = getContentResolver().openInputStream(mFileUri);
-                    dr = Drawable.createFromStream(inputStream, mFileUri.toString() );
-                } catch (FileNotFoundException e) {
-                    Log.e("MainActivity", "Could not open file");
-                }
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("fileDir", mFile.toString());
+                setResult(RESULT_OK, returnIntent);
+                finish();
             }
         }
     }
